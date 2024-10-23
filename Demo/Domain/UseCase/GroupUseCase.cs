@@ -20,7 +20,7 @@ public class GroupUseCase
     }
 
 
-    public List<Group> GetAllGroups() => _iRepositoryGroup.GetAllGroup
+    public List<Group> GetAllGroup() => _iRepositoryGroup.GetAllGroup
                 .Select(it => new Group { Id = it.Id, Name = it.Name }).ToList();
 
 
@@ -44,4 +44,7 @@ public class GroupUseCase
         if (!result) throw new Exception("");
         return new Group { Id = newGroup.Id, Name = newGroup.Name };
     }
+
+
+   // public Group GetGroupById(int groupId) => _iRepositoryGroup.GetGroupById(groupId);
 }
