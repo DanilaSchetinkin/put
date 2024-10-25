@@ -38,10 +38,18 @@ namespace Demo.Domain.UseCase
         public User UpdateUser(User user) {
             UserLocalEnity userLocalEnity = new UserLocalEnity { FIO = user.FIO, GroupID = user.Group.Id, Guid = user.Guid };
             bool result = _iRepositoryUser.UpdateUser(userLocalEnity);
-            if (!result) throw new Exception("");
-            Group? group = GetAllGroup().FirstOrDefault(it => it.Id == result!.GroupID);
-            if (group == null) throw new Exception("");
-            return new User { FIO = user.FIO, Guid = user.Guid,  Group = group};
+            if (!result)
+                throw new InvalidOperationException("");
+
+            var groups = GetAllGroup();
+            if (groups == null || !groups.Any())
+                throw new InvalidOperationException("");
+
+            Group? group = groups.FirstOrDefault(it => it.Id == userLocalEnity.GroupID);
+            if (group == null)
+                throw new InvalidOperationException("");
+
+            return new User { FIO = user.FIO, Guid = user.Guid, Group = group };
         }
 
         

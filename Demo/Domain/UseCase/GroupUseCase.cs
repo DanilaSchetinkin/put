@@ -46,5 +46,18 @@ public class GroupUseCase
     }
 
 
-   // public Group GetGroupById(int groupId) => _iRepositoryGroup.GetGroupById(groupId);
+    public Group GetGroupById(int groupId)
+    {
+        
+        GroupLocalEntity? groupLocalEntity = _iRepositoryGroup.GetGroupById(groupId);
+
+        
+        if (groupLocalEntity == null)
+        {
+            throw new Exception("");
+        }
+
+        
+        return new Group { Id = groupLocalEntity.Id, Name = groupLocalEntity.Name };
+    }
 }
