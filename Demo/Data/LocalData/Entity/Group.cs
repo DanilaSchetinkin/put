@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Demo.domain.Models
+namespace Demo.Data.LocalData.Entity
 {
     public class GroupLocalEntity
     {

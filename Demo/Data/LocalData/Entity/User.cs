@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Demo.domain.Models
+namespace Demo.Data.LocalData.Entity
 {
     public class UserLocalEnity : IEquatable<UserLocalEnity>
     {
@@ -13,12 +13,12 @@ namespace Demo.domain.Models
 
         public required int GroupID { get; set; }
 
-      
+
 
         public bool Equals(UserLocalEnity? other)
         {
             if (other == null) return false;
-            return this.Guid.Equals(other.Guid);
+            return Guid.Equals(other.Guid);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Demo.Data.Repository;
-using Demo.domain.Models;
+﻿using Demo.Data.LocalData.Entity;
+using Demo.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace Demo.Domain.UseCase
                     presences.Add(new PresenceLocalEntity
                     {
                         UserGuid = user.Guid,
-                        GroupId = user.GroupID,
+                        GroupID = user.GroupID,
                         Date = currentDate,
                         LessonNumber = lessonNumber,
                         IsAttedance = true
@@ -74,6 +74,7 @@ namespace Demo.Domain.UseCase
         {
             return _presenceRepository.GetPresenceByGroup(groupId);
         }
+
 
 
 

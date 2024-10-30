@@ -1,4 +1,5 @@
-﻿using Demo.Data.Repository;
+﻿using Demo.Data.LocalData.Entity;
+using Demo.Data.Repository;
 using Demo.domain.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Demo.Domain.UseCase;
 public class GroupUseCase
 {
     private IGroupRepository _iRepositoryGroup;
-
+    private GroupRepositoryImpl groupRepositoryImpl;
 
     public GroupUseCase(IGroupRepository iRepositoryGroup)
     {
@@ -19,6 +20,10 @@ public class GroupUseCase
         _iRepositoryGroup = iRepositoryGroup;
     }
 
+    public GroupUseCase(GroupRepositoryImpl groupRepositoryImpl)
+    {
+        this.groupRepositoryImpl = groupRepositoryImpl;
+    }
 
     public List<Group> GetAllGroup() => _iRepositoryGroup.GetAllGroup
                 .Select(it => new Group { Id = it.Id, Name = it.Name }).ToList();

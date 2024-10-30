@@ -8,7 +8,7 @@ namespace Demo.Data.RemoteData.RemoteDataBase.DAO;
 
 public class UserDao
 {
-    public required string FIO { get; set }
+    public required string FIO { get; set; }
 
     public Guid Guid { get; set; }
 

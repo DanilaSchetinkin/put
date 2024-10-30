@@ -1,6 +1,6 @@
-﻿using Demo.Data.RemoteData.RemoteDataBase.DAO;
-
-using Demo.domain.Models;
+﻿using Demo.Data.LocalData.Entity;
+using Demo.Data.RemoteData.RemoteDataBase.DAO;
+using Demo.Data.Repository;
 using System;
 using System.Collections.Generic;
 
@@ -21,5 +21,7 @@ namespace Demo.Data.Repository
         List<PresenceDao> GetPresenceByGroupAndDateDaos(int groupId, DateTime date);
         void MarkUserAsAbsentDaos(Guid userGuid, int groupId, int firstLessonNumber, int lastLessonNumber);
         void AddPresenceDaos(PresenceDao presence);
+
+
     }
 }

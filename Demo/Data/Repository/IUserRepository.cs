@@ -1,4 +1,4 @@
-﻿using Demo.domain.Models;
+﻿using Demo.Data.LocalData.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
