@@ -12,3 +12,7 @@ GroupUseCase groupUseCase = new GroupUseCase(groupRepositoryImpl);
 
 MainMenuUI mainMenuUI = new MainMenuUI(userUseCase, groupUseCase);
 
+IServiceCollection services = new ServiceCollection();
+
+services.AddDbContext<RemoteDatabaseContext>()
+    .AddSingleton<IGroupRepository, SQLGroupRepositoryImpl>();
