@@ -18,7 +18,7 @@ public class SQLUserRepositoryImpl: IUserRepository
         _remoteDatabaseContext = remoteDatabaseContext;
     }
 
-    // Метод для получения всех пользователей
+    
     public IEnumerable<UserLocalEnity> GetAllUsers => _remoteDatabaseContext.Users
         .Select(u => new UserLocalEnity
         {
@@ -28,18 +28,18 @@ public class SQLUserRepositoryImpl: IUserRepository
         })
         .ToList();
 
-    // Метод для удаления пользователя по GUID
+    
     public bool RemoveUserById(Guid userGuid)
     {
         var user = _remoteDatabaseContext.Users.FirstOrDefault(u => u.Guid == userGuid);
         if (user == null) throw new UserException(userGuid);
 
         _remoteDatabaseContext.Users.Remove(user);
-        _remoteDatabaseContext.SaveChanges(); // Сохранение изменений в базе данных
+        _remoteDatabaseContext.SaveChanges(); 
         return true;
     }
 
-    // Метод для обновления данных пользователя
+   
     public UserLocalEnity? UpdateUser(UserLocalEnity user)
     {
         var existingUser = _remoteDatabaseContext.Users.FirstOrDefault(u => u.Guid == user.Guid);
@@ -47,9 +47,9 @@ public class SQLUserRepositoryImpl: IUserRepository
 
         existingUser.FIO = user.FIO;
         existingUser.GroupID = user.GroupID;
-        _remoteDatabaseContext.SaveChanges(); // Сохранение изменений в базе данных
+        _remoteDatabaseContext.SaveChanges(); 
 
-        // Возвращаем обновленный объект UserLocalEnity
+       
         return new UserLocalEnity
         {
             Guid = existingUser.Guid,
@@ -58,9 +58,9 @@ public class SQLUserRepositoryImpl: IUserRepository
         };
     }
 
-    // Дополнительный метод для DAO, если требуется
+    
     public IEnumerable<RemoteData.RemoteDataBase.DAO.UserDao> GetAllUsersDao => _remoteDatabaseContext.Users.ToList();
 
-    public List<UserLocalEnity> GetAllUser { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+   // public List<UserLocalEnity> GetAllUser { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 }
 
