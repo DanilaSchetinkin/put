@@ -61,6 +61,6 @@ public class SQLUserRepositoryImpl: IUserRepository
     
     public IEnumerable<RemoteData.RemoteDataBase.DAO.UserDao> GetAllUsersDao => _remoteDatabaseContext.Users.ToList();
 
-   // public List<UserLocalEnity> GetAllUser { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public List<UserLocalEnity> GetAllUser { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 }
 

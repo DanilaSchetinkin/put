@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Data.Repository;
 
@@ -20,13 +21,33 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
 
     public void SavePresence(List<PresenceLocalEntity> presences)
     {
-        _remoteDatabaseContext.PresenceDaos.AddRange(presences.Select(it => new PresenceDao
+        foreach (var presence in presences)
         {
-            Date = DateOnly.FromDateTime(it.Date),
-            IsAttedance = it.IsAttedance,
-            LessonNumber = it.LessonNumber,
-            UserGuid = it.UserGuid
-        }));
+           
+            var existing = _remoteDatabaseContext.PresenceDaos.FirstOrDefault(p =>
+                p.Date == DateOnly.FromDateTime(presence.Date) &&
+                p.UserGuid == presence.UserGuid &&
+                p.LessonNumber == presence.LessonNumber);
+
+            if (existing == null)
+            {
+                
+                _remoteDatabaseContext.PresenceDaos.Add(new PresenceDao
+                {
+                    Date = DateOnly.FromDateTime(presence.Date),
+                    IsAttedance = presence.IsAttedance,
+                    LessonNumber = presence.LessonNumber,
+                    UserGuid = presence.UserGuid
+                });
+            }
+            else
+            {
+              
+                existing.IsAttedance = presence.IsAttedance;
+            }
+        }
+
+        
         _remoteDatabaseContext.SaveChanges();
     }
 
@@ -46,8 +67,8 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
 
     public List<PresenceLocalEntity> GetPresenceByGroup(int groupId)
     {
-        return _remoteDatabaseContext.PresenceDaos
-            .Where(p => p.UserDao != null && p.UserDao.GroupID == groupId) // Проверяем на null перед использованием
+        return _remoteDatabaseContext.PresenceDaos.Include(user => user.UserDao)
+            .Where(p => p.UserDao != null && p.UserDao.GroupID == groupId) 
             .Select(p => new PresenceLocalEntity
             {
                 Date = p.Date.ToDateTime(TimeOnly.MinValue),
@@ -82,16 +103,16 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
 
             if (presence != null)
             {
-                presence.IsAttedance = false; // Помечаем как отсутствующего
+                presence.IsAttedance = false; 
             }
         }
     }
 
     public DateOnly? GetLastDateByGroupId(int groupId)
     {
-        // Проверяем наличие записей о посещаемости в базе данных для данной группы.
+       
         var lastDate = _remoteDatabaseContext.PresenceDaos
-            .Where(p => p.GroupId == groupId)
+            .Where(p => p.UserDao.GroupID == groupId)
             .OrderByDescending(p => p.Date)
             .Select(p => p.Date)
             .FirstOrDefault();
@@ -99,77 +120,59 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
         return lastDate == default ? (DateOnly?)null : lastDate;
     }
 
-    public void GetGeneralPresenceForGroup(int groupId)
+    public GroupPresenceSummary GetGeneralPresenceForGroup(int groupId)
     {
         var presences = _remoteDatabaseContext.PresenceDaos
-            .Where(p => p.GroupId == groupId)
-            .OrderBy(p => p.LessonNumber)
+            .Where(p => p.UserDao.GroupID == groupId)
+            .OrderBy(p => p.Date).ThenBy(p => p.LessonNumber)
             .ToList();
 
-        var distinctDates = presences
-            .Select(p => p.Date)
+        
+        var distinctLessonDates = presences
+            .Select(p => new { p.Date, p.LessonNumber })
             .Distinct()
             .ToList();
 
-        int lessonCount = 0;
-        double totalAttendance = 0;
-        DateOnly previousDate = DateOnly.MinValue;
+        int lessonCount = distinctLessonDates.Count;
 
-        HashSet<Guid> userGuids = new HashSet<Guid>();
+      
+        var userGuids = presences
+            .Select(p => p.UserGuid)
+            .Distinct()
+            .ToHashSet();
 
-        foreach (var presence in presences)
+        // Подсчитываем общее количество посещений и общее количество возможных посещений
+        double totalAttendance = presences.Count(p => p.IsAttedance);
+        double totalPossibleAttendance = userGuids.Count * lessonCount;
+
+        var userAttendances = userGuids.Select(userGuid =>
         {
-            userGuids.Add(presence.UserGuid);
-
-            if (presence.Date != previousDate)
-            {
-                previousDate = presence.Date;
-                lessonCount++;
-            }
-
-            if (presence.IsAttedance)
-            {
-                totalAttendance++;
-            }
-        }
-
-        Console.WriteLine($"Человек в группе: {userGuids.Count}, " +
-                          $"Количество проведённых занятий: {lessonCount}, " +
-                          $"Общий процент посещаемости группы: {totalAttendance / (userGuids.Count * distinctDates.Count) * 100}%");
-
-        // Подготовка для расчета посещаемости каждого пользователя
-        List<UserAttendance> userAttendances = new List<UserAttendance>();
-
-        foreach (var userGuid in userGuids)
-        {
-            var userPresences = presences.Where(p => p.UserGuid == userGuid);
+            var userPresences = presences.Where(p => p.UserGuid == userGuid).ToList();
             double attended = userPresences.Count(p => p.IsAttedance);
             double missed = userPresences.Count(p => !p.IsAttedance);
 
-            userAttendances.Add(new UserAttendance
+            return new UserAttendance
             {
                 UserGuid = userGuid,
                 Attended = attended,
                 Missed = missed,
-                AttendanceRate = attended / (attended + missed) * 100
-            });
-        }
+                AttendanceRate = (attended / (attended + missed)) * 100
+            };
+        }).ToList();
 
-        // Вывод информации по каждому пользователю
-        foreach (var user in userAttendances)
+        // Рассчитываем общий процент посещаемости группы
+        double totalAttendancePercentage = (totalAttendance / totalPossibleAttendance) * 100;
+
+        return new GroupPresenceSummary
         {
-            if (user.AttendanceRate < 40)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-            }
-
-            Console.WriteLine($"GUID Пользователя: {user.UserGuid}, " +
-                              $"Посетил: {user.Attended}, " +
-                              $"Пропустил: {user.Missed}, " +
-                              $"Процент посещаемости: {user.AttendanceRate}%");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+            UserCount = userGuids.Count,
+            LessonCount = lessonCount,
+            TotalAttendancePercentage = totalAttendancePercentage,
+            UserAttendances = userAttendances
+        };
     }
+
+
 
 
 
@@ -178,7 +181,7 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
         // Находим все записи по UserId, GroupId, LessonNumber (в диапазоне) и дате
         var presences = _remoteDatabaseContext.PresenceDaos
             .Where(p => p.UserGuid == UserGuid
-                        && p.GroupId == groupId
+                        && p.UserDao.GroupID == groupId
                         && p.LessonNumber >= firstLesson
                         && p.LessonNumber <= lastLesson
                         && p.Date == date)
@@ -200,5 +203,27 @@ public class SQLPresenceRepositoryImpl: IPresenceRepository
             Console.WriteLine($"Посещаемость для пользователя ID: {UserGuid} на дату {date.ToShortDateString()} с {firstLesson} по {lastLesson} уроки не найдена.");
         }
     }
+    public List<PresenceDao> GetAttendanceByGroup(int groupId)
+    {
+        // Получаем пользователей указанной группы
+        var userGuidsInGroup = _remoteDatabaseContext.Users
+            .Where(u => u.GroupID == groupId)
+            .Select(u => u.Guid)
+            .ToList();
+
+        // Фильтруем посещаемость по пользователям из этой группы
+        return _remoteDatabaseContext.PresenceDaos
+            .Where(p => userGuidsInGroup.Contains(p.UserGuid))
+            .Select(p => new PresenceDao
+            {
+                UserGuid = p.UserGuid,
+                Id = p.Id,
+                Date = p.Date,
+                LessonNumber = p.LessonNumber,
+                IsAttedance = p.IsAttedance
+            })
+            .ToList();
+    }
 }
+
 

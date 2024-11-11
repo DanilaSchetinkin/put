@@ -8,11 +8,12 @@ namespace Demo.Data.RemoteData.RemoteDataBase.DAO;
 
 public class UserDao
 {
-    public required string FIO { get; set; }
+    public  string FIO { get; set; }
 
     public Guid Guid { get; set; }
 
-    public required int GroupID { get; set; }
+    public int GroupID { get; set; }
 
-    public GroupDao Group { get; set; }
+    public virtual GroupDao Group { get; set; }
+    public virtual IEnumerable<PresenceDao> Presences { get; set; }
 }

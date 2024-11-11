@@ -11,7 +11,7 @@ namespace Demo.Data.RemoteData.RemoteDataBase.DAO
         public int Id { get; set; }
         public required string Name { get; set; }
 
-        public IEnumerable<UserDao> Users { get; set; }
+        public virtual IEnumerable<UserDao> Users { get; set; }
 
     }
 }
