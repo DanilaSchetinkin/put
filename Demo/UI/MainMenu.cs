@@ -24,6 +24,16 @@ namespace Demo.UI
         {
             while (true)
             {
+                Console.WriteLine("\n==================== Главная Панель ====================\n");
+
+                Console.WriteLine("~~~~~~~~~~~~~~~ УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ~~~~~~~~~~~~~~~");
+                Console.WriteLine("1. Показать список всех пользователей");
+                Console.WriteLine("2. Удалить пользователя по его Guid");
+                Console.WriteLine("3. Обновить данные пользователя по Guid");
+                Console.WriteLine("4. Найти пользователя по его Guid");
+                Console.WriteLine();
+
+
                 switch (Console.ReadLine())
                 {
                     case "1": _userConsoleUI.DisplayAllUsers(); break;
