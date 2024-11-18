@@ -14,7 +14,8 @@ namespace Demo.UI
             _userUseCase = userUseCase;
         }
 
-        public void RemoveUserByGuid(Guid guidUser) {
+        public void RemoveUserByGuid(Guid guidUser) 
+        {
 
             string output = _userUseCase.RemoveUserByGuid(guidUser) ? "Пользователь удален" : "Пользователь не удален";
             Console.WriteLine(output);
@@ -30,9 +31,10 @@ namespace Demo.UI
             Console.WriteLine(userOutput);
         }
 
-        //public void UpdateByGuid(Guid guidUser)
-        //{
-        //    string update = _userUseCase.UpdateUser(guidUser);
-        //}
+        public void UpdateByGuid(Guid guidUser)
+        {
+            string update = _userUseCase.UpdateUser(guidUser) ? "Изменения успешны" : "Изменения не удались";
+            Console.WriteLine(update);
+        }
     }
 }

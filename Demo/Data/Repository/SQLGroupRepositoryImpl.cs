@@ -18,8 +18,8 @@ namespace Demo.Data.Repository;
     {
         _remoteDatabaseContext =  remoteDatabaseContext;
     }
-
-    public List<GroupLocalEntity> GetAllGroup { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+public List<GroupLocalEntity> GetAllGroup { get =>AllGroup ; set => GetAllGroup = value; }
+    
 
 
      public GroupLocalEntity? GetGroupById(int groupId)

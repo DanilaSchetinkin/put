@@ -16,6 +16,7 @@ namespace Demo.Domain.UseCase
         private UserRepositoryImpl userRepositoryImpl;
         private GroupRepositoryImpl groupRepositoryImpl;
 
+
         public UserUseCase(IUserRepository iRepositoryUser, IGroupRepository iRepositoryGroup)
         {
             _iRepositoryUser = iRepositoryUser;

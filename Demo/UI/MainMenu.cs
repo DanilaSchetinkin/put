@@ -20,13 +20,13 @@ namespace Demo.UI
             DisplayMenu();
         }
 
-        private void DisplayMenu()
+        public void DisplayMenu()
         {
             while (true)
             {
                 Console.WriteLine("\n==================== Главная Панель ====================\n");
 
-                Console.WriteLine("~~~~~~~~~~~~~~~ УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ~~~~~~~~~~~~~~~");
+                Console.WriteLine(" УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ:");
                 Console.WriteLine("1. Показать список всех пользователей");
                 Console.WriteLine("2. Удалить пользователя по его Guid");
                 Console.WriteLine("3. Обновить данные пользователя по Guid");
@@ -38,6 +38,8 @@ namespace Demo.UI
                 {
                     case "1": _userConsoleUI.DisplayAllUsers(); break;
                     case "2": _userConsoleUI.RemoveUserByGuid(Guid.Parse(Console.ReadLine())); break;
+                    case "3": _userConsoleUI.UpdateUserByGuid
+                    case "4": _userConsoleUI.FindUserByGuid
 
                     default:
                         DisplayMenu();

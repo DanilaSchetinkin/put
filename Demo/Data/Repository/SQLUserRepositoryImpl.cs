@@ -1,6 +1,7 @@
 ﻿using Demo.Data.Exceptions;
 using Demo.Data.LocalData.Entity;
 using Demo.Data.RemoteData.RemoteDataBase;
+using Demo.domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,69 @@ public class SQLUserRepositoryImpl: IUserRepository
     
     public IEnumerable<RemoteData.RemoteDataBase.DAO.UserDao> GetAllUsersDao => _remoteDatabaseContext.Users.ToList();
 
-    public List<UserLocalEnity> GetAllUser { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+
+
+    public List<UserLocalEnity> GetAllUser
+    {
+        get => _remoteDatabaseContext.Users
+        .Select(u => new UserLocalEnity
+        {
+            Guid = u.Guid,
+            FIO = u.FIO,
+            GroupID = u.GroupID
+        })
+        .ToList();
+        set => GetAllUser = value;
+    }
+
+    //public List<UserLocalEnity>. GetAllUser(UserLocalEnity user)
+    //{
+
+    //    return _iRepositoryUser.GetAllUser
+    //        .Join(_iRepositoryGroup.GetAllGroup,
+    //            user => user.GroupID,
+    //            group => group.Id,
+    //            (user, group) => new UserLocalEntity
+    //            {
+    //                FIO = user.FIO,
+    //                Guid = user.Guid,
+    //                Group = new Group { Id = group.Id, Name = group.Name }
+    //            })
+    //        .ToList();
+
+    //}
+
+
+
+
+    //    { return _iRepositoryUser.GetAllUser
+    //            .Join(_iRepositoryGroup.GetAllGroup,
+    //                user => user.GroupID,
+    //                group => group.Id,
+    //                (user, group) => new UserLocalEntity
+    //                {
+    //                    FIO = user.FIO,
+    //                    Guid = user.Guid,
+    //                    Group = new Group { Id = group.Id, Name = group.Name
+    //}
+    //                })
+    //            .ToList(); }
+
+
+    //_iRepositoryUser.GetAllUser
+    //            .Join(_iRepositoryGroup.GetAllGroup,
+    //            user => user.GroupID,
+    //            group => group.Id,
+    //            (user, group) =>
+    //            new User
+    //            {
+    //                FIO = user.FIO,
+    //                Guid = user.Guid,
+    //                Group = new Group { Id = group.Id, Name = group.Name }
+    //            }
+    //          ).ToList();
+
+
 }
 

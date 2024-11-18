@@ -5,14 +5,26 @@ using Demo.Domain.UseCase;
 using Demo.UI;
 using Microsoft.Extensions.DependencyInjection;
 
-GroupRepositoryImpl groupRepositoryImpl = new GroupRepositoryImpl();
-UserRepositoryImpl userRepositoryImpl = new UserRepositoryImpl();
-UserUseCase userUseCase = new UserUseCase(userRepositoryImpl, groupRepositoryImpl);
-GroupUseCase groupUseCase = new GroupUseCase(groupRepositoryImpl);
 
-MainMenuUI mainMenuUI = new MainMenuUI(userUseCase, groupUseCase);
+
+//MainMenuUI mainMenuUI = new MainMenuUI(userUseCase, groupUseCase);
 
 IServiceCollection services = new ServiceCollection();
 
 services.AddDbContext<RemoteDatabaseContext>()
-    .AddSingleton<IGroupRepository, SQLGroupRepositoryImpl>();
+    .AddSingleton<IGroupRepository, SQLGroupRepositoryImpl>()
+    .AddSingleton<IUserRepository, SQLUserRepositoryImpl>()
+    .AddSingleton<IPresenceRepository, SQLPresenceRepositoryImpl>()
+    .AddSingleton<UserUseCase>()
+    .AddSingleton<GroupUseCase>()
+    .AddSingleton<UseCaseGeneratePresence>()
+    .AddSingleton<GroupConsole>()
+    .AddSingleton<PresenceConsole>()
+    .AddSingleton<UserConsoleUI>()
+    .AddSingleton<MainMenuUI>();
+
+var servicePorvider  = services.BuildServiceProvider();
+
+var menu = servicePorvider.GetService<MainMenuUI>();
+
+menu.DisplayMenu();
