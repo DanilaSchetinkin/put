@@ -31,10 +31,10 @@ namespace Demo.UI
             Console.WriteLine(userOutput);
         }
 
-        public void UpdateByGuid(Guid guidUser)
-        {
-            string update = _userUseCase.UpdateUser(guidUser) ? "Изменения успешны" : "Изменения не удались";
-            Console.WriteLine(update);
-        }
+        //public void UpdateByGuid(Guid guidUser)
+        //{
+        //    string update = _userUseCase.UpdateUser(guidUser) ? "Изменения успешны" : "Изменения не удались";
+        //    Console.WriteLine(update);
+        //}
     }
 }
