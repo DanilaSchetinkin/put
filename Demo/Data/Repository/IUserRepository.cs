@@ -1,4 +1,7 @@
 ﻿using Demo.Data.LocalData.Entity;
+using Demo.Data.RemoteData.RemoteDataBase;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +15,24 @@ public interface IUserRepository
      List<UserLocalEnity> GetAllUser { get; set; }
 
 
-    bool RemoveUserByGuid(Guid userGuid)
+    async Task<bool> RemoveUserByGuid(Guid userGuid)
     {
-        UserLocalEnity? userLocal = GetAllUser
-            .Where(x => x.Guid == userGuid).FirstOrDefault();
-        if (userLocal == null) return false;
+        using var context = new RemoteDatabaseContext();
+        var user = await context.Users
+            .FirstOrDefaultAsync(x => x.Guid == userGuid);
 
-        return GetAllUser.Remove(userLocal);
+        if (user == null) 
+            return false;
+
+        try
+        {
+            context.Users.Remove(user);
+            return await context.SaveChangesAsync() == 1;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     UserLocalEnity? GetUserByGuid(Guid userGuid)

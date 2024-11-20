@@ -14,10 +14,9 @@ namespace Demo.UI
             _userUseCase = userUseCase;
         }
 
-        public void RemoveUserByGuid(Guid guidUser) 
+        public async Task RemoveUserByGuid(Guid guidUser) 
         {
-
-            string output = _userUseCase.RemoveUserByGuid(guidUser) ? "Пользователь удален" : "Пользователь не удален";
+            string output = await _userUseCase.RemoveUserByGuid(guidUser) ? "Пользователь удален" : "Пользователь не удален";
             Console.WriteLine(output);
         }
 

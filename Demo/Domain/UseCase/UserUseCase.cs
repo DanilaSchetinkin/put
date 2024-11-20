@@ -42,8 +42,8 @@ namespace Demo.Domain.UseCase
         private List<Group> GetAllGroup() => _iRepositoryGroup.GetAllGroup
                 .Select(it => new Group { Id = it.Id, Name = it.Name }).ToList();
 
-        public bool RemoveUserByGuid(Guid userGuid) {
-           return _iRepositoryUser.RemoveUserByGuid(userGuid);
+        public async Task<bool> RemoveUserByGuid(Guid userGuid) {
+           return await _iRepositoryUser.RemoveUserByGuid(userGuid);
         }
         public User UpdateUser(User user) {
             UserLocalEnity userLocalEnity = new UserLocalEnity { FIO = user.FIO, GroupID = user.Group.Id, Guid = user.Guid };
